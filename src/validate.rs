@@ -21,14 +21,14 @@ use crate::lowercase::Lowercase;
 #[cfg(feature = "jomini")]
 use crate::report::fatal;
 use crate::report::{Confidence, ErrorKey, Severity, err, report, warn};
-#[cfg(any(feature = "ck3", feature = "hoi4"))]
+#[cfg(any(feature = "ck3", feature = "hoi4", feature = "vic3"))]
 use crate::scopes::Scopes;
 use crate::scopes::{scope_prefix, scope_to_scope};
 #[cfg(feature = "jomini")]
 use crate::script_value::{validate_non_dynamic_script_value, validate_script_value};
 use crate::token::Token;
 use crate::tooltipped::Tooltipped;
-#[cfg(any(feature = "ck3", feature = "hoi4"))]
+#[cfg(any(feature = "ck3", feature = "hoi4", feature = "vic3"))]
 use crate::trigger::validate_target_ok_this;
 #[cfg(feature = "jomini")]
 use crate::trigger::validate_trigger;
@@ -349,6 +349,15 @@ pub fn precheck_iterator_fields(
         && let Some(tag) = block.get_field_value("original_tag_to_check")
     {
         validate_target_ok_this(tag, data, sc, Scopes::Country);
+    }
+
+    // The `parent` filter of the container iterators is evaluated outside the list scope.
+    #[cfg(feature = "vic3")]
+    if Game::is_vic3()
+        && name == "container"
+        && let Some(parent) = block.get_field_value("parent")
+    {
+        validate_target_ok_this(parent, data, sc, Scopes::non_primitive());
     }
 }
 
@@ -753,6 +762,25 @@ pub fn validate_inside_iterator(
             vd.field_any_cmp("value"); // prechecked
         } else {
             vd.ban_field("candidate", || format!("`{listtype}_succession_appointment_investors`"));
+        }
+    }
+
+    #[cfg(feature = "vic3")]
+    if Game::is_vic3() {
+        if name == "container" {
+            vd.field_identifier("tag", "tag");
+            vd.field_validated_block("tags", |block, data| {
+                let mut vd = Validator::new(block, data);
+                for tag in vd.values() {
+                    validate_identifier(tag, "tag", Severity::Error);
+                }
+            });
+            vd.field_value("parent"); // prechecked
+        } else {
+            let only_for = || format!("`{listtype}_container`");
+            vd.ban_field("tag", only_for);
+            vd.ban_field("tags", only_for);
+            vd.ban_field("parent", only_for);
         }
     }
 

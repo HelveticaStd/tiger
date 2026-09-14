@@ -4,13 +4,15 @@ use crate::desc::validate_desc;
 use crate::everything::Everything;
 use crate::helpers::TigerHashSet;
 use crate::item::Item;
-use crate::report::{ErrorKey, ErrorLoc, err, warn};
+use crate::report::{ErrorKey, ErrorLoc, Severity, err, warn};
 use crate::scopes::Scopes;
 use crate::script_value::validate_script_value;
 use crate::token::Token;
 use crate::tooltipped::Tooltipped;
 use crate::trigger::validate_target;
-use crate::validate::{validate_color, validate_optional_duration, validate_possibly_named_color};
+use crate::validate::{
+    validate_color, validate_identifier, validate_optional_duration, validate_possibly_named_color,
+};
 use crate::validator::{Validator, ValueValidator};
 use crate::vic3::data::buildings::BuildingType;
 use crate::vic3::tables::misc::{LOBBY_FORMATION_REASON, STATE_TYPES, STRATA, TARIFF_LEVELS};
@@ -449,6 +451,50 @@ pub fn validate_create_character(
     vd.field_bool("is_agitator");
     vd.field_bool("ig_leader");
     vd.field_item("commander_rank", Item::CommanderRank);
+}
+
+pub fn validate_create_container(
+    _key: &Token,
+    _block: &Block,
+    _data: &Everything,
+    sc: &mut ScopeContext,
+    mut vd: Validator,
+    _tooltipped: Tooltipped,
+) {
+    // The container is reachable later via `container:<name>`.
+    vd.field_identifier_or_flag("name", sc);
+    vd.field_validated_block("tags", |block, data| {
+        let mut vd = Validator::new(block, data);
+        for tag in vd.values() {
+            validate_identifier(tag, "tag", Severity::Error);
+        }
+    });
+    // The container is destroyed when its parent becomes invalid.
+    // `this` is the scope that `create_container` is running in, so it's a valid parent.
+    vd.field_target_ok_this("parent", sc, Scopes::non_primitive());
+    if let Some(name) = vd.field_identifier("save_scope_as", "scope name") {
+        sc.define_name_token(name.as_str(), Scopes::Container, name, Temporary::No);
+    }
+    if let Some(name) = vd.field_identifier("save_temporary_scope_as", "scope name") {
+        sc.define_name_token(name.as_str(), Scopes::Container, name, Temporary::Yes);
+    }
+    vd.field_effect_rooted("on_created", Tooltipped::No, Scopes::Container);
+}
+
+/// A specific validator for the `set_name` effect, which takes either a literal name or a
+/// flag reference.
+pub fn validate_set_name(
+    _key: &Token,
+    mut vd: ValueValidator,
+    sc: &mut ScopeContext,
+    _tooltipped: Tooltipped,
+) {
+    // NOTE: this check should mirror the one in `validate_identifier`
+    if vd.value().as_str().contains('.') || vd.value().as_str().contains(':') {
+        vd.target(sc, Scopes::Flag);
+    } else {
+        vd.identifier("container name");
+    }
 }
 
 pub fn validate_create_country(
