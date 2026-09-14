@@ -17,6 +17,7 @@ pub fn injectable_vic3(itype: Item) -> bool {
                 | Item::BuildingType
                 | Item::BuyPackage
                 | Item::CharacterInteraction
+                | Item::CharacterRole
                 | Item::CharacterTemplate
                 | Item::CharacterTrait
                 | Item::CohesionLevel
