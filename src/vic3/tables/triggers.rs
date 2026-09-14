@@ -1728,7 +1728,6 @@ const TRIGGER: &[(Scopes, &str, Trigger)] = &[
     (Scopes::Religion, "shares_heritage_trait_group_with_state_religion", Scope(Scopes::Country)),
     (Scopes::Culture, "shares_heritage_trait_with_any_primary_culture", Scope(Scopes::Country)),
     (Scopes::Culture, "shares_heritage_trait_with_culture", Scope(Scopes::Culture)),
-    (Scopes::Religion, "shares_heritage_trait_with_culture", Scope(Scopes::Religion)),
     (Scopes::Religion, "shares_heritage_trait_with_religion", Scope(Scopes::Religion)),
     (Scopes::Religion, "shares_heritage_trait_with_state_religion", Scope(Scopes::Country)),
     (
