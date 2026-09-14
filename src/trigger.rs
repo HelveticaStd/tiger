@@ -1646,6 +1646,7 @@ bitflags! {
         const First = 0b_0000_0001;
         const Last = 0b_0000_0010;
         const Question = 0b_0000_0100;
+        const Argument = 0b_0000_1000;
     }
 }
 
@@ -1665,7 +1666,12 @@ pub fn validate_inscopes(
     // If the part does not use its inscope then any parts that come before it are useless
     // and probably indicate a mistake is being made.
     if inscopes == Scopes::None && !part_flags.contains(PartFlags::First) {
-        warn_not_first(name);
+        if part_flags.contains(PartFlags::Argument) {
+            let msg = format!("`{name}()` makes no sense except as first part");
+            warn(ErrorKey::Validation).msg(msg).loc(name).push();
+        } else {
+            warn_not_first(name);
+        }
     }
     sc.expect(inscopes, &Reason::Token(name.clone()), data);
 }
@@ -1705,15 +1711,15 @@ fn validate_argument_internal(
                 sc.unstash_builder(stash);
             }
         }
-        #[cfg(feature = "eu5")]
+        #[cfg(any(feature = "vic3", feature = "eu5"))]
         ArgumentValue::Multiple(specs) => {
             let args = arg.split('|');
             // TODO: EU5 if the arguments are all mandatory, also check for not enough arguments
             if args.len() > specs.len() {
-                let msg = format!("too many arguments for trigger; expected {}", specs.len());
+                let msg = format!("too many arguments; expected {}", specs.len());
                 warn(ErrorKey::Validation).msg(msg).loc(&args[specs.len()]).push();
             } else if args.len() < specs.len() {
-                let msg = format!("too few arguments for trigger; expected {}", specs.len());
+                let msg = format!("too few arguments; expected {}", specs.len());
                 warn(ErrorKey::Validation).msg(msg).loc(arg).push();
             }
             for (arg, spec) in args.into_iter().zip(specs) {
@@ -1793,13 +1799,15 @@ pub fn validate_argument_scope(
 /// or a scope prefix.
 #[allow(unreachable_code, unused_variables)]
 pub fn validate_argument(
-    part_flags: PartFlags,
+    mut part_flags: PartFlags,
     part: &Token,
     func: &Token,
     arg: &Token,
     data: &Everything,
     sc: &mut ScopeContext,
 ) {
+    part_flags |= PartFlags::Argument;
+
     #[cfg(feature = "imperator")]
     if Game::is_imperator() {
         // Imperator does not use `()`
@@ -1841,7 +1849,7 @@ pub fn validate_argument(
     } else if let Some(entry) = scope_prefix(func) {
         validate_argument_scope(part_flags, entry, part, func, arg, data, sc);
     } else {
-        let msg = format!("unknown token `{func}:`");
+        let msg = format!("unknown token `{func}`");
         err(ErrorKey::Validation).msg(msg).loc(func).push();
     }
 }

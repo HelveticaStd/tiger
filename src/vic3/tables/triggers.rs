@@ -440,7 +440,11 @@ const TRIGGER: &[(Scopes, &str, Trigger)] = &[
     ),
     (Scopes::Country, "gdp_per_capita_ranking", CompareValue),
     (Scopes::Country, "gdp_ranking", CompareValue),
-    (Scopes::None, "global_variable_map_size", UncheckedTodo),
+    (
+        Scopes::None,
+        "global_variable_map_size",
+        Block(&[("name", Identifier("variable map name")), ("value", CompareValue)]),
+    ),
     (
         Scopes::Country,
         "goods_production_rank",
@@ -562,7 +566,7 @@ const TRIGGER: &[(Scopes, &str, Trigger)] = &[
     (Scopes::Country, "has_global_highest_innovation", Boolean),
     (Scopes::None, "has_global_variable", Identifier("variable name")),
     (Scopes::None, "has_global_variable_list", Identifier("list name")),
-    (Scopes::None, "has_global_variable_map", UncheckedTodo),
+    (Scopes::None, "has_global_variable_map", Identifier("variable map name")),
     (Scopes::Country, "has_government_clout", CompareValue),
     (Scopes::Country, "has_government_type", Item(Item::GovernmentType)),
     (Scopes::StateRegion, "has_harvest_condition", Item(Item::HarvestConditionType)),
@@ -600,7 +604,7 @@ const TRIGGER: &[(Scopes, &str, Trigger)] = &[
     (Scopes::Country, "has_law_or_variant", Scope(Scopes::LawType)),
     (Scopes::None, "has_local_variable", Special),
     (Scopes::None, "has_local_variable_list", Special),
-    (Scopes::None, "has_local_variable_map", UncheckedTodo),
+    (Scopes::None, "has_local_variable_map", Identifier("variable map name")),
     (Scopes::None, "has_map_interaction", Item(Item::MapInteractionType)),
     (Scopes::None, "has_map_interaction_diplomatic_action", Item(Item::DiplomaticAction)),
     (
@@ -735,7 +739,7 @@ const TRIGGER: &[(Scopes, &str, Trigger)] = &[
     (Scopes::NewCombatUnit, "has_unit_type", Scope(Scopes::CombatUnitType)),
     (Scopes::None, "has_variable", Identifier("variable name")),
     (Scopes::None, "has_variable_list", Identifier("list name")),
-    (Scopes::None, "has_variable_map", UncheckedTodo),
+    (Scopes::None, "has_variable_map", Identifier("variable map name")),
     (
         Scopes::War,
         "has_war_exhaustion",
@@ -936,9 +940,30 @@ const TRIGGER: &[(Scopes, &str, Trigger)] = &[
     (Scopes::Country, "is_involved_in_journal_entry", Item(Item::JournalEntry)),
     (Scopes::State, "is_isolated_from_market", Boolean),
     (Scopes::Country, "is_junior_in_customs_union", Boolean),
-    (Scopes::None, "is_key_in_global_variable_map", UncheckedTodo),
-    (Scopes::None, "is_key_in_local_variable_map", UncheckedTodo),
-    (Scopes::None, "is_key_in_variable_map", UncheckedTodo),
+    (
+        Scopes::None,
+        "is_key_in_global_variable_map",
+        Block(&[
+            ("name", Identifier("variable map name")),
+            ("target", ScopeOkThis(Scopes::all_but_none())),
+        ]),
+    ),
+    (
+        Scopes::None,
+        "is_key_in_local_variable_map",
+        Block(&[
+            ("name", Identifier("variable map name")),
+            ("target", ScopeOkThis(Scopes::all_but_none())),
+        ]),
+    ),
+    (
+        Scopes::None,
+        "is_key_in_variable_map",
+        Block(&[
+            ("name", Identifier("variable map name")),
+            ("target", ScopeOkThis(Scopes::all_but_none())),
+        ]),
+    ),
     (Scopes::Theater, "is_land_theater", Boolean),
     (Scopes::State, "is_largest_state_in_region", Boolean),
     (Scopes::None, "is_lens_open", Block(&[("lens", UncheckedTodo), ("?tab_name", UncheckedTodo)])),
@@ -1085,9 +1110,30 @@ const TRIGGER: &[(Scopes, &str, Trigger)] = &[
     (Scopes::State, "is_under_colonization", Boolean),
     (Scopes::Building, "is_under_construction", Boolean),
     (Scopes::Country, "is_unification_candidate", Item(Item::CountryFormation)),
-    (Scopes::None, "is_value_in_global_variable_map", UncheckedTodo),
-    (Scopes::None, "is_value_in_local_variable_map", UncheckedTodo),
-    (Scopes::None, "is_value_in_variable_map", UncheckedTodo),
+    (
+        Scopes::None,
+        "is_value_in_global_variable_map",
+        Block(&[
+            ("name", Identifier("variable map name")),
+            ("target", ScopeOkThis(Scopes::all_but_none())),
+        ]),
+    ),
+    (
+        Scopes::None,
+        "is_value_in_local_variable_map",
+        Block(&[
+            ("name", Identifier("variable map name")),
+            ("target", ScopeOkThis(Scopes::all_but_none())),
+        ]),
+    ),
+    (
+        Scopes::None,
+        "is_value_in_variable_map",
+        Block(&[
+            ("name", Identifier("variable map name")),
+            ("target", ScopeOkThis(Scopes::all_but_none())),
+        ]),
+    ),
     (Scopes::Country, "is_violating_sovereignty_of", Scope(Scopes::Country)),
     (Scopes::Front, "is_vulnerable_front", Scope(Scopes::Country)),
     (Scopes::DiplomaticPlay, "is_war", Boolean),
@@ -1142,7 +1188,11 @@ const TRIGGER: &[(Scopes, &str, Trigger)] = &[
         Choice(LOBBY_FORMATION_REASON),
     ),
     (Scopes::None, "local_variable_list_size", Special),
-    (Scopes::None, "local_variable_map_size", UncheckedTodo),
+    (
+        Scopes::None,
+        "local_variable_map_size",
+        Block(&[("name", Identifier("variable map name")), ("value", CompareValue)]),
+    ),
     (
         Scopes::Country.union(Scopes::State),
         "loyalist_fraction",
@@ -1850,7 +1900,11 @@ const TRIGGER: &[(Scopes, &str, Trigger)] = &[
         "variable_list_size",
         Block(&[("name", Identifier("list name")), ("value", CompareValue)]),
     ),
-    (Scopes::None, "variable_map_size", UncheckedTodo),
+    (
+        Scopes::None,
+        "variable_map_size",
+        Block(&[("name", Identifier("variable map name")), ("value", CompareValue)]),
+    ),
     (
         Scopes::War,
         "war_exhaustion_from_acceptance_of_dead",

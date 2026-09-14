@@ -104,6 +104,28 @@ pub fn validate_add_to_variable_list(
     }
 }
 
+#[cfg(feature = "vic3")]
+pub fn validate_variable_map(
+    key: &Token,
+    _block: &Block,
+    _data: &Everything,
+    sc: &mut ScopeContext,
+    mut vd: Validator,
+    _tooltipped: Tooltipped,
+) {
+    vd.req_field("name");
+    vd.req_field("key");
+    if let Some(name) = vd.field_value("name") {
+        validate_identifier(name, "variable map name", Severity::Error);
+    }
+    vd.field_target_ok_this("key", sc, Scopes::all_but_none());
+    if key.starts_with("add_") {
+        vd.req_field("value");
+        vd.field_target_ok_this("value", sc, Scopes::all_but_none());
+        validate_optional_duration(&mut vd, sc);
+    }
+}
+
 /// A specific validator for the three `change_variable` effects (`global`, `local`, and default).
 #[cfg(feature = "jomini")]
 pub fn validate_change_variable(

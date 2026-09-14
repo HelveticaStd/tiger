@@ -450,6 +450,10 @@ pub fn validate_iterator_fields(
     }
 }
 
+#[cfg(feature = "jomini")]
+const VARIABLE_MAP_ITERATORS: &[&str] =
+    &["key_in_variable_map", "key_in_local_variable_map", "key_in_global_variable_map"];
+
 /// This checks the special fields for certain iterators, like `type =` in `every_relation`.
 /// It doesn't check the generic ones like `limit` or the ordering ones for `ordered_*`.
 #[allow(unused_variables)] // vic3 does not use `tooltipped`
@@ -485,6 +489,14 @@ pub fn validate_inside_iterator(
         vd.ban_field("list", || format!("{listtype}_in_list"));
         if let Some(token) = vd.field_value("variable") {
             sc.replace_global_list_entry(token);
+        }
+    } else if Game::is_vic3() && VARIABLE_MAP_ITERATORS.contains(&name.as_str()) {
+        // The `variable` field is the name of the map; the iterated scope is its keys, which can
+        // be of any type.
+        vd.req_field("variable");
+        vd.ban_field("list", || format!("{listtype}_in_list"));
+        if let Some(token) = vd.field_value("variable") {
+            validate_identifier(token, "variable map name", Severity::Error);
         }
     } else {
         vd.ban_field("list", || format!("{listtype}_in_list"));

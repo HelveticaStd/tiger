@@ -467,7 +467,7 @@ pub enum ArgumentValue {
     #[cfg(any(feature = "vic3", feature = "ck3", feature = "eu5"))]
     Identifier(&'static str),
     /// The value consists of multiple arguments separated by `|`
-    #[cfg(feature = "eu5")]
+    #[cfg(any(feature = "vic3", feature = "eu5"))]
     Multiple(&'static [ArgumentValue]),
     /// The value can be anything
     UncheckedValue,

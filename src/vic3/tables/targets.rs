@@ -495,6 +495,12 @@ const SCOPE_PREFIX: &[(Scopes, &str, Scopes, ArgumentValue)] = {
         (Scopes::None, "global_var", Scopes::all(), UncheckedValue),
         (
             Scopes::None,
+            "global_variable_map",
+            Scopes::all_but_none(),
+            Multiple(&[Identifier("variable map name"), Scope(Scopes::all_but_none())]),
+        ),
+        (
+            Scopes::None,
             "harvest_condition_type",
             Scopes::HarvestConditionType,
             Item(Item::HarvestConditionType),
@@ -540,6 +546,12 @@ const SCOPE_PREFIX: &[(Scopes, &str, Scopes, ArgumentValue)] = {
         (Scopes::Country, "lobby_war_opposition", Scopes::Value, Scope(Scopes::Country)),
         (Scopes::Country, "lobby_war_support", Scopes::Value, Scope(Scopes::Country)),
         (Scopes::None, "local_var", Scopes::all(), UncheckedValue),
+        (
+            Scopes::None,
+            "local_variable_map",
+            Scopes::all_but_none(),
+            Multiple(&[Identifier("variable map name"), Scope(Scopes::all_but_none())]),
+        ),
         (Scopes::Market, "mg", Scopes::MarketGoods, Item(Item::Goods)),
         (
             Scopes::None,
@@ -643,6 +655,12 @@ const SCOPE_PREFIX: &[(Scopes, &str, Scopes, ArgumentValue)] = {
         (Scopes::None, "tension_threshold", Scopes::Value, UncheckedValue),
         (Scopes::None, "unit_type", Scopes::CombatUnitType, Item(Item::CombatUnit)),
         (Scopes::all(), "var", Scopes::all(), UncheckedValue),
+        (
+            Scopes::all(),
+            "variable_map",
+            Scopes::all_but_none(),
+            Multiple(&[Identifier("variable map name"), Scope(Scopes::all_but_none())]),
+        ),
     ]
 };
 
