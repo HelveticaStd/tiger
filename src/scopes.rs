@@ -550,6 +550,15 @@ pub fn scope_to_scope(name: &Token, inscopes: Scopes) -> Option<(Scopes, Scopes)
             if inscopes.contains(Scopes::HarvestCondition) {
                 outscopes |= Scopes::HarvestConditionType;
             }
+            if inscopes.contains(Scopes::Amendment) {
+                outscopes |= Scopes::AmendmentType;
+            }
+            if inscopes.contains(Scopes::Ship) {
+                outscopes |= Scopes::ShipType;
+            }
+            if inscopes.contains(Scopes::Strait) {
+                outscopes |= Scopes::StraitType;
+            }
             if !outscopes.is_empty() {
                 return Some((from, outscopes));
             }
