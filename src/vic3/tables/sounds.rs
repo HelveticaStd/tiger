@@ -833,6 +833,7 @@ const SOUNDS: &[&str] = &[
     "event:/SFX/UI/Military/formation_actions_station_at_hq",
     "event:/SFX/UI/Military/military_units_transfer_army",
     "event:/SFX/UI/Military/military_units_transfer_navy",
+    "event:/SFX/UI/Military/naval_mission_settings_confirm",
     "event:/SFX/UI/Military/order_admiral_blockade",
     "event:/SFX/UI/Military/order_admiral_convoy_raiding",
     "event:/SFX/UI/Military/order_admiral_intercept",
