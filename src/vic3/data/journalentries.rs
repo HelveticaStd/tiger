@@ -78,7 +78,7 @@ impl DbKind for JournalEntry {
         vd.field_effect("on_become_involved_after_activation", Tooltipped::No, &mut country_sc);
         vd.field_effect("on_no_longer_involved", Tooltipped::No, &mut country_sc);
 
-        vd.field_validated_block("widget", |block, data| {
+        vd.multi_field_validated_block("widget", |block, data| {
             let mut vd = Validator::new(block, data);
             vd.field_item("gui", Item::File);
             vd.field_value("name");
